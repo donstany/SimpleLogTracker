@@ -11,6 +11,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
+    public DbSet<TLUser> TimeLogUsers => Set<TLUser>();
+    public DbSet<TLProject> Projects => Set<TLProject>();
+    public DbSet<TimeLog> TimeLogs => Set<TimeLog>();
+
     public DbSet<TodoList> TodoLists => Set<TodoList>();
 
     public DbSet<TodoItem> TodoItems => Set<TodoItem>();
@@ -18,6 +22,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<TLUser>().ToTable("TLUsers");
+        builder.Entity<TLProject>().ToTable("TLProjects");
+        builder.Entity<TimeLog>().ToTable("TimeLogs");
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
