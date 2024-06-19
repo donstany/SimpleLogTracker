@@ -69,13 +69,13 @@
             <script src="https://www.gstatic.com/charts/loader.js"></script>
             <script>
                 $(document).ready(function () {
-                    // Initialize date pickers
+
                     $('#startDate, #endDate').datepicker();
 
-                    // Load users data from backend
+
                     function loadUsers() {
                         $.ajax({
-                            url: '/api/user',
+                            url: '/api/users',
                             method: 'GET',
                             success: function (data) {
                                 $('#usersTable').DataTable({
@@ -100,26 +100,27 @@
 
                     loadUsers();
 
-                    // Initialize database button click event
                     $('#initializeDbButton').click(function () {
                         $.ajax({
-                            url: '/api/database/initialize',
+                            url: '/api/initdata',
                             method: 'POST',
-                            success: function () {
-                                alert('Database initialized successfully!');
+                            contentType: 'application/json',
+                            data: JSON.stringify({}),
+                            success: function (result) {
+                                alert('Database initialized successfully! Return value: ' + result);
                                 loadUsers();
                                 drawStaticChart();
+                            },
+                            error: function (xhr, status, error) {
+                                alert('Failed to initialize database: ' + xhr.responseText);
                             }
                         });
                     });
 
-                    // Filter button click event
                     $('#filterButton').click(function () {
-                        // Function to handle filtering (if needed)
                         drawStaticChart();
                     });
 
-                    // Load and draw Google Chart with static data
                     google.charts.load('current', { packages: ['corechart', 'bar'] });
                     google.charts.setOnLoadCallback(drawStaticChart);
 
@@ -127,8 +128,8 @@
                         var data = new google.visualization.DataTable();
                         data.addColumn('string', 'User');
                         data.addColumn('number', 'Hours');
-
-                        // Static data for demonstration
+                        
+                        //TODO take data from BE
                         var chartData = [
                             ["John", 40],
                             ["Jane", 35],
@@ -155,7 +156,6 @@
                         chart.draw(data, options);
                     }
 
-                    // Compare button click event
                     $(document).on('click', '.compare-btn', function () {
                         var userId = $(this).data('user-id');
                         $.ajax({
