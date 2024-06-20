@@ -1,4 +1,4 @@
-﻿namespace SimpleLogTracker.Application.Users.Queries.GetUsersWithPagination
+﻿namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
 {
     public record GetUsersForDataTables : IRequest<PaginatedList<UsersForDataTablesVm>>
     {

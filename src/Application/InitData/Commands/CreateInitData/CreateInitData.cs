@@ -1,6 +1,6 @@
 ﻿using SimpleLogTracker.Application.Common.Interfaces;
 
-namespace SimpleLogTracker.Application.TodoItems.Commands.CreateTodoItem;
+namespace SimpleLogTracker.Application.InitData.Commands.CreateInitData;
 
 public record CreateInitDataCommand : IRequest<int>
 {

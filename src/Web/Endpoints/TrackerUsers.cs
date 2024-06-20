@@ -1,4 +1,4 @@
-﻿using SimpleLogTracker.Application.Users.Queries.GetUsersWithPagination;
+﻿using SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleLogTracker.Web.Endpoints;

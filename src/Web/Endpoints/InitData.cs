@@ -1,6 +1,6 @@
 ﻿// Ignore Spelling: app
 
-using SimpleLogTracker.Application.TodoItems.Commands.CreateTodoItem;
+using SimpleLogTracker.Application.InitData.Commands.CreateInitData;
 
 namespace SimpleLogTracker.Web.Endpoints;
 
