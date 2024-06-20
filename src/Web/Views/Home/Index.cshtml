@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Dashboard</title>
+    <title>Simple Log Tracker Dashboard</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         .box {
             margin-top: 20px;
@@ -18,178 +19,182 @@
         <div class="row">
             <div class="col-md-6">
                 <h2>Simple Log Tracker Dashboard</h2>
-            </div>
-            <div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <button id="initializeDbButton" class="btn btn-danger">Initialize Database</button>
-                        <h2>Users</h2>
-                        <div class="box">
-                            <div class="box-body">
-                                <div class="form-group">
-                                    <label for="startDate">Start Date:</label>
-                                    <input type="text" id="startDate" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="endDate">End Date:</label>
-                                    <input type="text" id="endDate" class="form-control">
-                                </div>
-                                <button id="filterButton" class="btn btn-primary">Filter</button>
-                            </div>
+                <button id="initializeDbButton" class="btn btn-danger">(Re)Initialize Data</button>
+                <h2>Users</h2>
+                <div class="box">
+                    <div class="box-body">
+                        <div class="form-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="text" id="startDate" class="form-control">
                         </div>
-                        <div class="box">
-                            <div class="box-header">
-                                <h3 class="box-title">User List</h3>
-                            </div>
-                            <div class="box-body">
-                                <table id="usersTable" class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>First Name</th>
-                                            <th>Last Name</th>
-                                            <th>Email</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="text" id="endDate" class="form-control">
                         </div>
+                        <button id="filterButton" class="btn btn-primary">Filter</button>
                     </div>
-                    <div class="col-md-6">
-                        <h2>Top 10 Users by Hours</h2>
-                        <div id="chart_div"></div>
+                </div>
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title">User List</h3>
+                    </div>
+                    <div class="box-body">
+                        <table id="usersTable" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Email</th>
+                                    <th>Total Hours</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+            <div class="col-md-6">
+                <h2>Top 10 Users/Project by Hours</h2>
+                <div id="chart_div"></div>
+            </div>
+        </div>
+    </div>
 
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-            <script src="https://www.gstatic.com/charts/loader.js"></script>
-            <script>
-                $(document).ready(function () {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#startDate, #endDate').datepicker();
 
-                    $('#startDate, #endDate').datepicker();
-
-
-                    function loadUsers() {
-                        $.ajax({
-                            url: '/api/users',
-                            method: 'GET',
-                            success: function (data) {
-                                $('#usersTable').DataTable({
-                                    data: data,
-                                    columns: [
-                                        { data: 'firstName' },
-                                        { data: 'lastName' },
-                                        { data: 'email' },
-                                        {
-                                            data: 'id',
-                                            render: function (data, type, row) {
-                                                return '<button class="btn btn-primary compare-btn" data-user-id="' + data + '">Compare</button>';
-                                            }
-                                        }
-                                    ],
-                                    pageLength: 10,
-                                    destroy: true
-                                });
-                            }
-                        });
+            var usersTable = $('#usersTable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: '/api/trackerUsers',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: function (d) {
+                        var startDate = $('#startDate').datepicker('getDate');
+                        var endDate = $('#endDate').datepicker('getDate');
+                        d.startDate = startDate ? startDate.toISOString() : null;
+                        d.endDate = endDate ? endDate.toISOString() : null;
+                        return JSON.stringify(d);
+                    },
+                    dataSrc: function (json) {
+                        return json.data;
                     }
+                },
+                columns: [
+                    { data: 'firstName' },
+                    { data: 'lastName' },
+                    { data: 'email' },
+                    { data: 'totalHours' },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return '<button class="btn btn-primary compare-btn" data-user-id="' + data + '">Compare</button>';
+                        }
+                    }
+                ],
+                pageLength: 10,
+                destroy: true
+            });
 
-                    loadUsers();
-
-                    $('#initializeDbButton').click(function () {
-                        $.ajax({
-                            url: '/api/initdata',
-                            method: 'POST',
-                            contentType: 'application/json',
-                            data: JSON.stringify({}),
-                            success: function (result) {
-                                alert('Database initialized successfully! Return value: ' + result);
-                                loadUsers();
-                                drawStaticChart();
-                            },
-                            error: function (xhr, status, error) {
-                                alert('Failed to initialize database: ' + xhr.responseText);
-                            }
-                        });
-                    });
-
-                    $('#filterButton').click(function () {
+            $('#initializeDbButton').click(function () {
+                $.ajax({
+                    url: '/api/initData',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({}),
+                    success: function (result) {
+                        alert('Database initialized successfully! Return value: ' + result);
+                        usersTable.ajax.reload();
                         drawStaticChart();
-                    });
-
-                    google.charts.load('current', { packages: ['corechart', 'bar'] });
-                    google.charts.setOnLoadCallback(drawStaticChart);
-
-                    function drawStaticChart() {
-                        var data = new google.visualization.DataTable();
-                        data.addColumn('string', 'User');
-                        data.addColumn('number', 'Hours');
-                        
-                        //TODO take data from BE
-                        var chartData = [
-                            ["John", 40],
-                            ["Jane", 35],
-                            ["Zane", 60],
-                            ["Alice", 50],
-                            ["Bob", 45],
-                            ["Charlie", 30],
-                            ["David", 55],
-                            ["Eve", 25],
-                            ["Frank", 20],
-                            ["Grace", 15]
-                        ];
-
-                        data.addRows(chartData);
-
-                        var options = {
-                            title: 'Top 10 Users by Hours',
-                            hAxis: { title: 'User' },
-                            vAxis: { title: 'Hours' },
-                            legend: 'none'
-                        };
-
-                        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-                        chart.draw(data, options);
-                    }
-
-                    $(document).on('click', '.compare-btn', function () {
-                        var userId = $(this).data('user-id');
-                        $.ajax({
-                            url: '/api/timelog/user/' + userId,
-                            method: 'GET',
-                            success: function (data) {
-                                drawChartWithComparison(data);
-                            }
-                        });
-                    });
-
-                    function drawChartWithComparison(comparisonData) {
-                        var data = new google.visualization.DataTable();
-                        data.addColumn('string', 'Date');
-                        data.addColumn('number', 'Hours');
-
-                        comparisonData.forEach(function (item) {
-                            data.addRow([item.logDate, item.hours]);
-                        });
-
-                        var options = {
-                            title: 'User Hours Comparison',
-                            hAxis: { title: 'Date' },
-                            vAxis: { title: 'Hours' },
-                            series: {
-                                0: { color: 'blue' },
-                                1: { color: 'red' }
-                            }
-                        };
-
-                        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                        chart.draw(data, options);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Failed to initialize database: ' + xhr.responseText);
                     }
                 });
-            </script>
+            });
+
+            $('#filterButton').click(function () {
+                usersTable.ajax.reload(); // Reload the table with the new filter parameters
+            });
+
+            google.charts.load('current', { packages: ['corechart', 'bar'] });
+            google.charts.setOnLoadCallback(drawStaticChart);
+
+            function drawStaticChart() {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'User');
+                data.addColumn('number', 'Hours');
+
+                var chartData = [
+                    ["John", 40],
+                    ["Jane", 35],
+                    ["Zane", 60],
+                    ["Alice", 50],
+                    ["Bob", 45],
+                    ["Charlie", 30],
+                    ["David", 55],
+                    ["Eve", 25],
+                    ["Frank", 20],
+                    ["Grace", 15]
+                ];
+
+                data.addRows(chartData);
+
+                var options = {
+                    title: 'Top 10 Users by Hours',
+                    hAxis: { title: 'User' },
+                    vAxis: { title: 'Hours' },
+                    legend: 'none'
+                };
+
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+
+            $(document).on('click', '.compare-btn', function () {
+                var userId = $(this).data('user-id');
+                $.ajax({
+                    url: '/api/timelog/user/' + userId,
+                    method: 'GET',
+                    success: function (data) {
+                        drawChartWithComparison(data);
+                    }
+                });
+            });
+
+            function drawChartWithComparison(comparisonData) {
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Date');
+                data.addColumn('number', 'Hours');
+
+                comparisonData.forEach(function (item) {
+                    data.addRow([item.date, item.hours]);
+                });
+
+                var options = {
+                    title: 'User Hours Comparison',
+                    hAxis: { title: 'Date' },
+                    vAxis: { title: 'Hours' },
+                    series: {
+                        0: { color: 'blue' },
+                        1: { color: 'red' }
+                    }
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                chart.draw(data, options);
+            }
+
+            // Initial load of the users table
+            usersTable.ajax.reload();
+        });
+    </script>
 </body>
 </html>
