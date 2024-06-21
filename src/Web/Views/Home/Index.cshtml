@@ -55,7 +55,13 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <h2>Top 10 Users/Project by Hours</h2>
+                <h2>Top 10 Users/Projects by Hours</h2>
+                <div>
+                    <input type="radio" id="radioUser" name="chartType" value="user" checked>
+                    <label for="radioUser">User</label>
+                    <input type="radio" id="radioProject" name="chartType" value="project">
+                    <label for="radioProject">Project</label>
+                </div>
                 <div id="chart_div"></div>
             </div>
         </div>
@@ -113,7 +119,7 @@
                     success: function (result) {
                         alert('Data (re)initialized successfully!');
                         usersTable.ajax.reload();
-                        drawStaticChart();
+                        drawChart();
                     },
                     error: function (xhr, status, error) {
                         alert('Failed to initialize database: ' + xhr.responseText);
@@ -126,37 +132,49 @@
             });
 
             google.charts.load('current', { packages: ['corechart', 'bar'] });
-            google.charts.setOnLoadCallback(drawStaticChart);
+            google.charts.setOnLoadCallback(drawChart);
 
-            function drawStaticChart() {
+            $('input[name="chartType"]').change(function () {
+                drawChart();
+            });
+
+            function drawChart() {
+                var chartType = $('input[name="chartType"]:checked').val();
                 var data = new google.visualization.DataTable();
-                data.addColumn('string', 'User');
+                data.addColumn('string', chartType === 'user' ? 'User' : 'Project');
                 data.addColumn('number', 'Hours');
 
-                var chartData = [
-                    ["John", 40],
-                    ["Jane", 35],
-                    ["Zane", 60],
-                    ["Alice", 50],
-                    ["Bob", 45],
-                    ["Charlie", 30],
-                    ["David", 55],
-                    ["Eve", 25],
-                    ["Frank", 20],
-                    ["Grace", 15]
-                ];
-
-                data.addRows(chartData);
+                var chartData = getUsersProjectsData(chartType);
+                var filteredChartData = chartData.filter(item => item[2] === chartType).map(item => [item[0], item[1]]);
+                data.addRows(filteredChartData);
 
                 var options = {
-                    title: 'Top 10 Users by Hours',
-                    hAxis: { title: 'User' },
+                    title: chartType === 'user' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
+                    hAxis: { title: chartType === 'user' ? 'User' : 'Project' },
                     vAxis: { title: 'Hours' },
                     legend: 'none'
                 };
 
                 var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
                 chart.draw(data, options);
+            }
+
+            function getUsersProjectsData(type) {
+                return [
+                    ["John", 40, "user"],
+                    ["Jane", 35, "user"],
+                    ["Zane", 60, "user"],
+                    ["Alice", 50, "user"],
+                    ["Bob", 45, "user"],
+                    ["Charlie", 30, "user"],
+                    ["David", 55, "user"],
+                    ["Eve", 25, "user"],
+                    ["Frank", 20, "user"],
+                    ["Grace", 15, "user"],
+                    ["My own", 150, "project"],
+                    ["Free Time", 200, "project"],
+                    ["Work", 300, "project"]
+                ];
             }
 
             $(document).on('click', '.compare-btn', function () {
@@ -174,9 +192,10 @@
                 var data = new google.visualization.DataTable();
                 data.addColumn('string', 'Date');
                 data.addColumn('number', 'Hours');
+                data.addColumn('number', 'Comparison');
 
                 comparisonData.forEach(function (item) {
-                    data.addRow([item.date, item.hours]);
+                    data.addRow([item.date, item.hours, item.comparison]);
                 });
 
                 var options = {
