@@ -14,11 +14,14 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <h2>Simple Log Tracker Dashboard</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 <button id="initializeDbButton" class="btn btn-danger">(Re)Initialize Data</button>
                 <h2>Users</h2>
                 <div class="box">
@@ -140,41 +143,34 @@
 
             function drawChart() {
                 var chartType = $('input[name="chartType"]:checked').val();
-                var data = new google.visualization.DataTable();
-                data.addColumn('string', chartType === 'user' ? 'User' : 'Project');
-                data.addColumn('number', 'Hours');
+                $.ajax({
+                    url: '/api/trackerUsersProjects',
+                    method: 'GET',
+                    success: function (data) {
+                        console.log(data);
+                        var chartData = new google.visualization.DataTable();
+                        chartData.addColumn('string', chartType === 'user' ? 'User' : 'Project');
+                        chartData.addColumn('number', 'Hours');
 
-                var chartData = getUsersProjectsData(chartType);
-                var filteredChartData = chartData.filter(item => item[2] === chartType).map(item => [item[0], item[1]]);
-                data.addRows(filteredChartData);
+                        var filteredChartData = data.filter(item => item.type === chartType).map(item => [item.name, item.hours]);
+                        console.log(filteredChartData);
 
-                var options = {
-                    title: chartType === 'user' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
-                    hAxis: { title: chartType === 'user' ? 'User' : 'Project' },
-                    vAxis: { title: 'Hours' },
-                    legend: 'none'
-                };
+                        chartData.addRows(filteredChartData);
 
-                var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-                chart.draw(data, options);
-            }
+                        var options = {
+                            title: chartType === 'user' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
+                            hAxis: { title: chartType === 'user' ? 'User' : 'Project' },
+                            vAxis: { title: 'Hours' },
+                            legend: 'none'
+                        };
 
-            function getUsersProjectsData(type) {
-                return [
-                    ["John", 40, "user"],
-                    ["Jane", 35, "user"],
-                    ["Zane", 60, "user"],
-                    ["Alice", 50, "user"],
-                    ["Bob", 45, "user"],
-                    ["Charlie", 30, "user"],
-                    ["David", 55, "user"],
-                    ["Eve", 25, "user"],
-                    ["Frank", 20, "user"],
-                    ["Grace", 15, "user"],
-                    ["My own", 150, "project"],
-                    ["Free Time", 200, "project"],
-                    ["Work", 300, "project"]
-                ];
+                        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                        chart.draw(chartData, options);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Failed to fetch chart data: ' + xhr.responseText);
+                    }
+                });
             }
 
             $(document).on('click', '.compare-btn', function () {
@@ -184,6 +180,9 @@
                     method: 'GET',
                     success: function (data) {
                         drawChartWithComparison(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('Failed to fetch comparison data: ' + xhr.responseText);
                     }
                 });
             });

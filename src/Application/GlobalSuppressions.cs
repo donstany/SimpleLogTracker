@@ -5,4 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "type", Target = "~T:SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination.UsersForDataTablesVm")]
+[assembly: SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "<Pending>", Scope = "type", Target = "~T:SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination.UsersForDataTablesDto")]
+[assembly: SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "<Pending>", Scope = "type", Target = "~T:SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackeUsersProjects.GetTrackerUsersProjectsQuery")]
+[assembly: SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "<Pending>", Scope = "type", Target = "~T:SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUsersProjects.GetTrackerUsersProjectsQuery")]
