@@ -4,7 +4,6 @@ using SimpleLogTracker.Domain.Entities;
 using SimpleLogTracker.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -64,5 +63,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         }
 
         return returnValue;
+    }
+
+    public async Task<IEnumerable<TopResult>> GetTopUsersAndProjectsAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+    {
+        var startParam = startDate.HasValue
+            ? new SqlParameter("@startDate", startDate.Value)
+            : new SqlParameter("@startDate", DBNull.Value);
+
+        var endParam = endDate.HasValue
+            ? new SqlParameter("@endDate", endDate.Value)
+            : new SqlParameter("@endDate", DBNull.Value);
+
+        var result = await this.Set<TopResult>()
+            .FromSqlRaw("EXEC [dbo].[GetTopUsersAndProjects] @startDate, @endDate", startParam, endParam)
+            .ToListAsync(cancellationToken);
+
+        return result;
     }
 }
