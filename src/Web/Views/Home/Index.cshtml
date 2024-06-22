@@ -20,10 +20,10 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-md-12  text-center">
+            <div class="col-md-12 text-center">
                 <hr />
                 <h2>Simple Log Tracker Dashboard</h2>
-                <hr/>
+                <hr />
             </div>
         </div>
         <div class="row">
@@ -158,7 +158,7 @@
 
             $('#filterButton').click(function () {
                 usersTable.ajax.reload(); // Reload the table with the new filter parameters
-                drawChart(); //TODO Redraw the chart with the new filter parameters
+                drawChart(); // Redraw the chart with the new filter parameters
             });
 
             google.charts.load('current', { packages: ['corechart', 'bar'] });
@@ -188,7 +188,7 @@
                             chartData.addColumn('number', 'Comparison');
                             for (var i = 0; i < filteredChartData.length; i++) {
                                 chartData.setValue(i, 1, chartData.getValue(i, 1));
-                                chartData.setValue(i, 2, comparisonData[0].hours);
+                                chartData.setValue(i, 2, comparisonData[0].totalHours);
                             }
                         }
 
@@ -213,21 +213,21 @@
             }
 
             var staticComparisonData = {
-                1: { name: 'John Doe', hours: 8 },
-                2: { name: 'Jane Smith', hours: 7 },
-                3: { name: 'Mark Johnson', hours: 6 },
-                4: { name: 'Lisa Brown', hours: 9 },
-                5: { name: 'Tom Hanks', hours: 5 },
-                6: { name: 'Sara Connor', hours: 4 },
-                7: { name: 'David Beckham', hours: 3 },
-                8: { name: 'Eva Green', hours: 2 },
-                9: { name: 'Frank Ocean', hours: 1 },
-                10: { name: 'Grace Kelly', hours: 10 },
-                // Add more static data as needed
+                1: { id: 1, name: 'John Doe', totalHours: 8 },
+                2: { id: 2, name: 'Jane Smith', totalHours: 7 },
+                3: { id: 3, name: 'Mark Johnson', totalHours: 6 },
+                4: { id: 4, name: 'Lisa Brown', totalHours: 9 },
+                5: { id: 5, name: 'Tom Hanks', totalHours: 5 },
+                6: { id: 6, name: 'Sara Connor', totalHours: 4 },
+                7: { id: 7, name: 'David Beckham', totalHours: 3 },
+                8: { id: 8, name: 'Eva Green', totalHours: 2 },
+                9: { id: 9, name: 'Frank Ocean', totalHours: 1 },
+                10: { id: 10, name: 'Grace Kelly', totalHours: 10 },
             };
 
             $(document).on('click', '.compare-btn', function () {
                 var userId = $(this).data('user-id');
+                console.log('uesrid:' + userId);
                 if (staticComparisonData[userId]) {
                     drawChart([staticComparisonData[userId]]);
                     $('#usersTable tbody tr').removeClass('selected-row');
