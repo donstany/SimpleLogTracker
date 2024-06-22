@@ -11,6 +11,10 @@
         .box {
             margin-top: 20px;
         }
+
+        .selected-row {
+            background-color: #d9edf7 !important;
+        }
     </style>
 </head>
 <body>
@@ -132,6 +136,7 @@
 
             $('#filterButton').click(function () {
                 usersTable.ajax.reload(); // Reload the table with the new filter parameters
+                drawChart(); //TODO Redraw the chart with the new filter parameters
             });
 
             google.charts.load('current', { packages: ['corechart', 'bar'] });
@@ -141,30 +146,42 @@
                 drawChart();
             });
 
-            function drawChart() {
+            function drawChart(comparisonData = null) {
                 var chartType = $('input[name="chartType"]:checked').val();
                 $.ajax({
                     url: '/api/trackerUsersProjects',
                     method: 'GET',
                     success: function (data) {
-                        console.log(data);
                         var chartData = new google.visualization.DataTable();
-                        chartData.addColumn('string', chartType === 'user' ? 'User' : 'Project');
-                        chartData.addColumn('number', 'Hours');
+                        chartData.addColumn('string', 'Name');
+                        chartData.addColumn('number', 'TotalHours');
 
-                        var filteredChartData = data.filter(item => item.type === chartType).map(item => [item.name, item.hours]);
-                        console.log(filteredChartData);
+                        var filteredChartData = data
+                            .filter(item => item.type === chartType)
+                            .map(item => [item.name, item.hours]);
 
                         chartData.addRows(filteredChartData);
+
+                        if (chartType === 'user' && comparisonData) {
+                            chartData.addColumn('number', 'Comparison');
+                            for (var i = 0; i < filteredChartData.length; i++) {
+                                chartData.setValue(i, 1, chartData.getValue(i, 1));
+                                chartData.setValue(i, 2, comparisonData[0].hours);
+                            }
+                        }
 
                         var options = {
                             title: chartType === 'user' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
                             hAxis: { title: chartType === 'user' ? 'User' : 'Project' },
-                            vAxis: { title: 'Hours' },
+                            vAxis: { title: 'Total Hours' },
+                            seriesType: 'bars',
+                            series: {
+                                1: { type: 'line', color: 'red', lineWidth: 2 }
+                            },
                             legend: 'none'
                         };
 
-                        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+                        var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
                         chart.draw(chartData, options);
                     },
                     error: function (xhr, status, error) {
@@ -173,43 +190,30 @@
                 });
             }
 
+            var staticComparisonData = {
+                1: { name: 'John Doe', hours: 8 },
+                2: { name: 'Jane Smith', hours: 7 },
+                3: { name: 'Mark Johnson', hours: 6 },
+                4: { name: 'Lisa Brown', hours: 9 },
+                5: { name: 'Tom Hanks', hours: 5 },
+                6: { name: 'Sara Connor', hours: 4 },
+                7: { name: 'David Beckham', hours: 3 },
+                8: { name: 'Eva Green', hours: 2 },
+                9: { name: 'Frank Ocean', hours: 1 },
+                10: { name: 'Grace Kelly', hours: 10 },
+                // Add more static data as needed
+            };
+
             $(document).on('click', '.compare-btn', function () {
                 var userId = $(this).data('user-id');
-                $.ajax({
-                    url: '/api/timelog/user/' + userId,
-                    method: 'GET',
-                    success: function (data) {
-                        drawChartWithComparison(data);
-                    },
-                    error: function (xhr, status, error) {
-                        alert('Failed to fetch comparison data: ' + xhr.responseText);
-                    }
-                });
+                if (staticComparisonData[userId]) {
+                    drawChart([staticComparisonData[userId]]);
+                    $('#usersTable tbody tr').removeClass('selected-row');
+                    $(this).closest('tr').addClass('selected-row');
+                } else {
+                    alert('No static data available for this user.');
+                }
             });
-
-            function drawChartWithComparison(comparisonData) {
-                var data = new google.visualization.DataTable();
-                data.addColumn('string', 'Date');
-                data.addColumn('number', 'Hours');
-                data.addColumn('number', 'Comparison');
-
-                comparisonData.forEach(function (item) {
-                    data.addRow([item.date, item.hours, item.comparison]);
-                });
-
-                var options = {
-                    title: 'User Hours Comparison',
-                    hAxis: { title: 'Date' },
-                    vAxis: { title: 'Hours' },
-                    series: {
-                        0: { color: 'blue' },
-                        1: { color: 'red' }
-                    }
-                };
-
-                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-                chart.draw(data, options);
-            }
 
             // Initial load of the users table
             usersTable.ajax.reload();
