@@ -1,4 +1,5 @@
-﻿using SimpleLogTracker.Domain.Entities;
+﻿using SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination;
+using SimpleLogTracker.Domain.Entities;
 
 namespace SimpleLogTracker.Application.Common.Interfaces;
 
@@ -10,8 +11,16 @@ public interface IApplicationDbContext
     DbSet<TLProject> TLProjects { get; }
     DbSet<TLUser> TLUsers { get; }
     DbSet<TimeLog> TimeLogs { get; }
-    Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default);
-    Task<IEnumerable<TopResult>> GetTopUsersAndProjectsAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<TopResult>> GetTopResultAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
+    //TODO fix signiture
+    Task<PaginatedList<UsersForDataTablesDto>> GetUserWithPaginationAsync(DateTime? startDate,
+                                                                          DateTime? endDate,
+                                                                          int start,
+                                                                          int length,
+                                                                          string orderByColumn,
+                                                                          string orderByDirection,
+                                                                          CancellationToken cancellationToken);
 }

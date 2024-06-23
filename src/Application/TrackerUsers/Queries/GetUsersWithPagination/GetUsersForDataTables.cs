@@ -1,4 +1,4 @@
-﻿// Ignore Spelling: Orderable
+﻿using SimpleLogTracker.Application.Common.Interfaces;
 
 namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
 {
@@ -26,73 +26,35 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? Dir { get; set; }
     }
 
-
     public class GetUsersForDataTablesHandler : IRequestHandler<GetUsersForDataTables, PaginatedList<UsersForDataTablesDto>>
     {
         private readonly IMapper _mapper;
+        private readonly IApplicationDbContext _context;
 
-        private static readonly List<User> Users = new List<User>
-        {
-            new User { Id = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", CreatedDate = new DateTime(2023, 1, 1), TotalHours = 40 },
-            new User { Id = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", CreatedDate = new DateTime(2023, 2, 1), TotalHours = 35 },
-            new User { Id = 3, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 4, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 5, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 6, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 7, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 8, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 9, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 10, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-            new User { Id = 11, FirstName = "Bob", LastName = "Johnson", Email = "bob.johnson@example.com", CreatedDate = new DateTime(2023, 3, 1), TotalHours = 45 },
-        };
-
-        public GetUsersForDataTablesHandler(IMapper mapper)
+        public GetUsersForDataTablesHandler(IMapper mapper, IApplicationDbContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<PaginatedList<UsersForDataTablesDto>> Handle(GetUsersForDataTables request, CancellationToken cancellationToken)
         {
-            var query = Users.AsQueryable();
+            var orderByColumn = request.Columns?[request.Order?.FirstOrDefault()?.Column ?? 0]?.Data ?? "Id";
+            var orderByDirection = request.Order?.FirstOrDefault()?.Dir ?? "ASC";
 
-            if (request.StartDate.HasValue && request.EndDate.HasValue)
-            {
-                query = query.Where(x => x.CreatedDate >= request.StartDate.Value && x.CreatedDate <= request.EndDate.Value);
-            }
+            var result = await _context.GetUserWithPaginationAsync(
+                request.StartDate,
+                request.EndDate,
+                request.Start,
+                request.Length,
+                orderByColumn,
+                orderByDirection,
+                cancellationToken
+            );
 
-            //if (request.Order.Any())
-            //{
-            //    var order = request.Order.FirstOrDefault();
-            //    var columnName = request.Columns[order!.Column].Data;
-
-            //    query = order.Dir.ToLower() == "asc"
-            //        ? query.OrderByDynamic(columnName)
-            //        : query.OrderByDescendingDynamic(columnName);
-            //}
-
-            var mappedQuery = query
-                .Skip(request.Start)
-                .Take(request.Length)
-                .Select(user => _mapper.Map<UsersForDataTablesDto>(user));
-
-            var totalRecords = query.Count();
-
-            return new PaginatedList<UsersForDataTablesDto>(await Task.FromResult(mappedQuery.ToList()), totalRecords, request.Start / request.Length + 1, request.Length);
+            return result;
         }
     }
-
-    //public static class IQueryableExtensions
-    //{
-    //    public static IQueryable<T> OrderByDynamic<T>(this IQueryable<T> query, string orderByMember)
-    //    {
-    //        return query.OrderBy(x => EF.Property<object>(x, orderByMember));
-    //    }
-
-    //    public static IQueryable<T> OrderByDescendingDynamic<T>(this IQueryable<T> query, string orderByMember)
-    //    {
-    //        return query.OrderByDescending(x => EF.Property<object>(x, orderByMember));
-    //    }
-    //}
 
     public class User
     {
@@ -100,7 +62,6 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
-        public DateTime CreatedDate { get; set; }
         public int TotalHours { get; set; }
     }
 
@@ -110,9 +71,8 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public int TotalHours { get; set; }
-
+        public double TotalHours { get; set; }
+        //public DateTime CreatedDate { get; set; }
         private class Mapping : Profile
         {
             public Mapping()
