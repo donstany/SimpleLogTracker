@@ -7,11 +7,12 @@ public class TrackerUsersComparison : EndpointGroupBase
     public override void Map(WebApplication app)
     {
         app.MapGroup(this)
-            .MapGet(GetTrackerUsersComparison,"{userId}"); // TrackerUsersComparison/144
+            .MapGet(GetTrackerUsersComparison);
     }
 
-    public async Task<GetUserComparisonDto> GetTrackerUsersComparison(ISender sender, int userId)
+    public async Task<GetUserComparisonDto> GetTrackerUsersComparison(ISender sender, int userId, DateTime? startDate, DateTime? endDate)
     {
+        //TODO: pass DateTime? startDate, DateTime? endDate
         return await sender.Send(new GetUserComparisonQuery { UserId = userId });
     }
 }

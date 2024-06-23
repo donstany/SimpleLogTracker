@@ -140,27 +140,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         var endDateParam = endDate.HasValue
             ? new SqlParameter("@endDate", endDate.Value)
             : new SqlParameter("@endDate", DBNull.Value);
-      
-        try
-        {
-            var userHoursResult = await this.Set<UserHours>()
-                        .FromSqlRaw("EXEC [dbo].[GetUserComparisonData] @userId, @startDate, @endDate", userIdParam, startDateParam, endDateParam)
-                        .FirstOrDefaultAsync(cancellationToken);
-        }
-        catch(Exception ex)
-        {
-            var z = ex.Message;
-        }
+        
+        //TODO pass _ instead hardcoded value
+        _ = await this.Set<UserHours>()
+             .FromSqlRaw("EXEC [dbo].[GetUserComparisonData] @userId, @startDate, @endDate", userIdParam, startDateParam, endDateParam)
+             .ToListAsync(cancellationToken);
 
-
-        //.Select(u => new UserComparisonDataDto
-        //{
-        //    Id = u.Id,
-        //    Name = u.Name,  // This assumes the stored procedure returns a column named 'Name'
-        //    TotalHours = u.TotalHours  // This assumes the stored procedure returns a column named 'TotalHours'
-        //})
-        //.FirstOrDefaultAsync(cancellationToken);
-        return new UserHours();
+        return new UserHours() { Id = 4, Name ="Test User", TotalHours = 65.55 };
     }
 
 }

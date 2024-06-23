@@ -215,13 +215,18 @@
 
                         var options = {
                             title: chartType === 'User' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
-                            hAxis: { title: chartType === 'User' ? 'User' : 'Project' },
+                            hAxis: {
+                                title: chartType === 'User' ? 'User' : 'Project',
+                                slantedText: true,
+                                slantedTextAngle: 45
+                            },
                             vAxis: { title: 'Total Hours' },
                             seriesType: 'bars',
                             series: {
-                                1: { type: 'line', color: 'red', lineWidth: 2 }
+                                0: { type: 'bars', color: 'blue' },
+                                1: { type: 'line', color: 'red', lineWidth: 2, targetAxisIndex: 0, labelInLegend: 'Current User' }
                             },
-                            legend: 'none'
+                            legend: { position: 'top' }
                         };
 
                         var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
@@ -235,9 +240,18 @@
 
             $(document).on('click', '.compare-btn', function () {
                 var userId = $(this).data('user-id');
+                var startDate = $('#startDate').datepicker('getDate');
+                var endDate = $('#endDate').datepicker('getDate');
+
+                var formattedStartDate = startDate ? formatDate(startDate) : null;
+                var formattedEndDate = endDate ? formatDate(endDate) : null;
+
+                var url = '/api/TrackerUsersComparison/' + userId +
+                    '?startDate=' + encodeURIComponent(formattedStartDate) +
+                    '&endDate=' + encodeURIComponent(formattedEndDate);
 
                 $.ajax({
-                    url: '/api/TrackerUsersComparison/' + userId,
+                    url: url,
                     method: 'GET',
                     success: function (data) {
                         drawChart([data]);
@@ -250,7 +264,7 @@
                 });
             });
 
-            // Initial load of the users table
+
             usersTable.ajax.reload();
         });
     </script>
