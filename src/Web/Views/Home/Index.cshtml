@@ -189,14 +189,12 @@
                     startDate: $('#dateRangeCheck').is(':checked') && startDate ? formatDate(startDate) : null,
                     endDate: $('#dateRangeCheck').is(':checked') && endDate ? formatDate(endDate) : null
                 };
-                debugger;
+
                 $.ajax({
                     url: '/api/trackerUsersProjects',
                     method: 'GET',
                     data: filterParams,
                     success: function (data) {
-                        debugger;
-                        console.log(data);
                         var chartData = new google.visualization.DataTable();
                         chartData.addColumn('string', 'Name');
                         chartData.addColumn('number', 'totalHours');
