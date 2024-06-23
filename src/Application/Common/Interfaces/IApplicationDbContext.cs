@@ -15,12 +15,13 @@ public interface IApplicationDbContext
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<TopResult>> GetTopResultAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
-    //TODO fix signiture
+    //TODO fix signature
     Task<PaginatedList<UsersForDataTablesDto>> GetUserWithPaginationAsync(DateTime? startDate,
                                                                           DateTime? endDate,
                                                                           int start,
                                                                           int length,
                                                                           string orderByColumn,
                                                                           string orderByDirection,
-                                                                          CancellationToken cancellationToken);
+                                                                         CancellationToken cancellationToken);
+    Task<UserHours> GetUserComparisonAsync(int userId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
 }

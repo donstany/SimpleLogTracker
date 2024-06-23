@@ -34,6 +34,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         builder.Entity<TopResult>().HasNoKey().ToView(null);
         builder.Entity<UserWithPagination>().HasNoKey().ToView(null);
+        builder.Entity<UserHours>().HasNoKey().ToView(null);
     }
 
     public async Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default)
@@ -125,7 +126,41 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
                 TotalHours = u.TotalHours
             })
             .ToList();
-
+        //TODO move mapping in Handler
         return new PaginatedList<UsersForDataTablesDto>(paginatedResult, totalCount, start / length + 1, length);
     }
+
+    public async Task<UserHours> GetUserComparisonAsync(int userId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
+    {
+        var userIdParam = new SqlParameter("@userId", userId);
+        var startDateParam = startDate.HasValue
+            ? new SqlParameter("@startDate", startDate.Value)
+            : new SqlParameter("@startDate", DBNull.Value);
+
+        var endDateParam = endDate.HasValue
+            ? new SqlParameter("@endDate", endDate.Value)
+            : new SqlParameter("@endDate", DBNull.Value);
+      
+        try
+        {
+            var userHoursResult = await this.Set<UserHours>()
+                        .FromSqlRaw("EXEC [dbo].[GetUserComparisonData] @userId, @startDate, @endDate", userIdParam, startDateParam, endDateParam)
+                        .FirstOrDefaultAsync(cancellationToken);
+        }
+        catch(Exception ex)
+        {
+            var z = ex.Message;
+        }
+
+
+        //.Select(u => new UserComparisonDataDto
+        //{
+        //    Id = u.Id,
+        //    Name = u.Name,  // This assumes the stored procedure returns a column named 'Name'
+        //    TotalHours = u.TotalHours  // This assumes the stored procedure returns a column named 'TotalHours'
+        //})
+        //.FirstOrDefaultAsync(cancellationToken);
+        return new UserHours();
+    }
+
 }
