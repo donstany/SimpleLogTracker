@@ -1,6 +1,4 @@
-﻿// Ignore Spelling: app
-
-using SimpleLogTracker.Application.InitData.Commands.CreateInitData;
+﻿using SimpleLogTracker.Application.InitData.Commands.CreateInitData;
 
 namespace SimpleLogTracker.Web.Endpoints;
 
