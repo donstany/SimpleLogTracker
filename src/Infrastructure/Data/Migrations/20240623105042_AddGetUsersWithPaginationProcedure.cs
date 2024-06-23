@@ -5,25 +5,17 @@
 namespace SimpleLogTracker.Infrastructure.Data.Migrations
 {
     /// <summary>
-    /// TEST GetUsersWithPagination
-    /// 
-    /// EXEC [dbo].[GetUsersWithPagination]
-    /// @startDate = '2024-06-01',
-    /// @endDate = '2024-06-30',
-    /// @start = 0,
-    /// @length = 10;  
-    /// 
-    /// EXEC [dbo].[GetUsersWithPagination]
-    /// @startDate = '2024-06-01',
-    /// @endDate = NULL,
-    /// @start = 0,
-    /// @length = 10;
+    ///-- Test Case 1: Basic pagination without filtering or ordering
+    ///EXEC GetUsersWithPagination @start = 0, @length = 10;
     ///
-    /// EXEC [dbo].[GetUsersWithPagination]
-    /// @startDate = NULL,
-    /// @endDate = NULL,
-    /// @start = 10,
-    /// @length = 20;
+    ///-- Test Case 2: Filter by date range
+    ///EXEC GetUsersWithPagination @startDate = '2024-01-01', @endDate = '2024-01-02', @start = 0, @length = 10;
+    ///
+    ///-- Test Case 3: Order by FirstName in descending order
+    ///EXEC GetUsersWithPagination @start = 0, @length = 10, @orderByColumn = 'FirstName', @orderByDirection = 'DESC';
+    ///
+    ///-- Test Case 4: Paginate with different start and length
+    ///EXEC GetUsersWithPagination @start = 1, @length = 1;
     /// /// </summary>
     public partial class AddGetUsersWithPaginationProcedure : Migration
     {
