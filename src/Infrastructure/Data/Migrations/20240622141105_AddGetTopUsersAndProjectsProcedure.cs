@@ -7,17 +7,16 @@ namespace SimpleLogTracker.Infrastructure.Data.Migrations
     public partial class AddGetTopUsersAndProjectsProcedure : Migration
     {
         /// <summary>
-        /// --TEST GetTopUsersAndProjects
-        ///-- Call with specific date range
-        ///--EXEC[dbo].[GetTopUsersAndProjects] @startDate = '2023-01-01', @endDate = '2023-12-31';
+        /// TEST GetTopUsersAndProjects
+        /// Call with specific date range
+        /// EXEC[dbo].[GetTopUsersAndProjects] @startDate = '2023-01-01', @endDate = '2023-12-31';
 
-        ///-- Call with only end date
-        ///--EXEC[dbo].[GetTopUsersAndProjects] @startDate = NULL, @endDate = '2025-07-17';
+        /// Call with only end date
+        /// EXEC[dbo].[GetTopUsersAndProjects] @startDate = NULL, @endDate = '2025-07-17';
 
-        ///-- Call without date filters
-        ///--EXEC[dbo].[GetTopUsersAndProjects];
+        /// Call without date filters
+        /// EXEC[dbo].[GetTopUsersAndProjects];
         /// </summary>
-        /// <param name="migrationBuilder"></param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             string procedure = @"
