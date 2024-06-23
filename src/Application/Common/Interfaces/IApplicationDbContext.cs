@@ -1,5 +1,4 @@
-﻿using SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination;
-using SimpleLogTracker.Domain.Entities;
+﻿using SimpleLogTracker.Domain.Entities;
 
 namespace SimpleLogTracker.Application.Common.Interfaces;
 
@@ -15,13 +14,13 @@ public interface IApplicationDbContext
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<TopResult>> GetTopResultAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
-    //TODO fix signature
-    Task<(List<UserWithPagination> Users, int TotalCount)> GetUserWithPaginationAsync(DateTime? startDate,
-                                                                          DateTime? endDate,
-                                                                          int start,
-                                                                          int length,
-                                                                          string orderByColumn,
-                                                                          string orderByDirection,
-                                                                         CancellationToken cancellationToken);
+
     Task<UserHours> GetUserComparisonAsync(int userId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
+    Task<(List<UserWithPagination> Users, int TotalCount)> GetUserWithPaginationAsync(DateTime? startDate,
+                                                                                      DateTime? endDate,
+                                                                                      int start,
+                                                                                      int length,
+                                                                                      string orderByColumn,
+                                                                                      string orderByDirection,
+                                                                                      CancellationToken cancellationToken);
 }
