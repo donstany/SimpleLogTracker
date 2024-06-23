@@ -30,11 +30,13 @@ namespace SimpleLogTracker.Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             string procedure = @"
-                      CREATE PROCEDURE [dbo].[GetUsersWithPagination]
+                     CREATE PROCEDURE [dbo].[GetUsersWithPagination]
                         @startDate DATETIME = NULL,
                         @endDate DATETIME = NULL,
                         @start INT,
-                        @length INT
+                        @length INT,
+                        @orderByColumn NVARCHAR(50) = 'Id',
+                        @orderByDirection NVARCHAR(4) = 'ASC'
                     AS
                     BEGIN
                         ;WITH FilteredLogs AS (
@@ -51,8 +53,18 @@ namespace SimpleLogTracker.Infrastructure.Data.Migrations
                             u.Email, 
                             ISNULL(f.TotalHours, 0) AS TotalHours
                         FROM TLUsers u
-                        JOIN FilteredLogs f ON u.Id = f.UserId
-                        ORDER BY u.Id
+                        LEFT JOIN FilteredLogs f ON u.Id = f.UserId
+                        ORDER BY 
+                            CASE WHEN @orderByColumn = 'FirstName' AND @orderByDirection = 'ASC' THEN u.FirstName END ASC,
+                            CASE WHEN @orderByColumn = 'FirstName' AND @orderByDirection = 'DESC' THEN u.FirstName END DESC,
+                            CASE WHEN @orderByColumn = 'LastName' AND @orderByDirection = 'ASC' THEN u.LastName END ASC,
+                            CASE WHEN @orderByColumn = 'LastName' AND @orderByDirection = 'DESC' THEN u.LastName END DESC,
+                            CASE WHEN @orderByColumn = 'Email' AND @orderByDirection = 'ASC' THEN u.Email END ASC,
+                            CASE WHEN @orderByColumn = 'Email' AND @orderByDirection = 'DESC' THEN u.Email END DESC,
+                            CASE WHEN @orderByColumn = 'TotalHours' AND @orderByDirection = 'ASC' THEN ISNULL(f.TotalHours, 0) END ASC,
+                            CASE WHEN @orderByColumn = 'TotalHours' AND @orderByDirection = 'DESC' THEN ISNULL(f.TotalHours, 0) END DESC,
+                            CASE WHEN @orderByColumn = 'Id' AND @orderByDirection = 'ASC' THEN u.Id END ASC,
+                            CASE WHEN @orderByColumn = 'Id' AND @orderByDirection = 'DESC' THEN u.Id END DESC
                         OFFSET @start ROWS
                         FETCH NEXT @length ROWS ONLY;
                     END;
