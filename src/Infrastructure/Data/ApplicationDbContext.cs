@@ -108,14 +108,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         var orderByColumnParam = new SqlParameter("@orderByColumn", orderByColumn);
         var orderByDirectionParam = new SqlParameter("@orderByDirection", orderByDirection);
 
-        // Query to get the paginated result
-        var result = await this.Set<UserWithPagination>()
+        var userWithPaginationResult = await this.Set<UserWithPagination>()
             .FromSqlRaw("EXEC [dbo].[GetUsersWithPagination] @startDate, @endDate, @start, @length, @orderByColumn, @orderByDirection",
                 startDateParam, endDateParam, startParam, lengthParam, orderByColumnParam, orderByDirectionParam)
             .ToListAsync(cancellationToken);
 
-        var paginatedResult = result
-            .AsQueryable()
+        var totalCount = userWithPaginationResult.FirstOrDefault()?.TotalCount ?? 0;
+
+        var paginatedResult = userWithPaginationResult
             .Select(u => new UsersForDataTablesDto
             {
                 Id = u.Id,
@@ -126,43 +126,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
             })
             .ToList();
 
-        // Query to get the total count of users that match the filtering criteria
-        // Get the total count of users that match the filtering criteria
-        //var totalCount = await GetTotalCountAsync(startDate, endDate, cancellationToken);
-        var totalCount = 20; // TODO take it from Database
-
         return new PaginatedList<UsersForDataTablesDto>(paginatedResult, totalCount, start / length + 1, length);
-    }
-
-    //public async Task<int> GetTotalCountAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
-    //{
-    //    var startDateParam = startDate.HasValue
-    //        ? new SqlParameter("@startDate", startDate.Value)
-    //        : new SqlParameter("@startDate", DBNull.Value);
-
-    //    var endDateParam = endDate.HasValue
-    //        ? new SqlParameter("@endDate", endDate.Value)
-    //        : new SqlParameter("@endDate", DBNull.Value);
-
-    //    var query = @"
-    //    SELECT COUNT(DISTINCT u.Id) AS TotalCount
-    //    FROM TLUsers u
-    //    LEFT JOIN TimeLogs t ON u.Id = t.UserId
-    //    WHERE (@startDate IS NULL OR t.Date >= @startDate) 
-    //      AND (@endDate IS NULL OR t.Date <= @endDate)";
-
-    //    //var totalCountResult = await this.Set<TotalCountResult>()
-    //    //    .FromSqlRaw(query, startDateParam, endDateParam)
-    //    //    .ToListAsync(cancellationToken);
-        
-    //    return 20; // TODO 
-
-    //    //return totalCountResult.FirstOrDefault()?.TotalCount ?? 0;
-    //}
-
-
-    public class TotalCountResult
-    {
-        public int TotalCount { get; set; }
     }
 }

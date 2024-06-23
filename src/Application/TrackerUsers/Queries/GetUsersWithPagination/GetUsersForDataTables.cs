@@ -71,7 +71,7 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Email { get; set; }
-        public double TotalHours { get; set; }
+        public decimal TotalHours { get; set; }
         //public DateTime CreatedDate { get; set; }
         private class Mapping : Profile
         {

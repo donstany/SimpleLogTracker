@@ -17,6 +17,8 @@ namespace SimpleLogTracker.Infrastructure.Data.Migrations
     ///-- Test Case 4: Paginate with different start and length
     ///EXEC GetUsersWithPagination @start = 1, @length = 1;
     ///returned colums Id,FirstName,LastName,Email,TotalHours,TotalCount
+    ///Id	FirstName LastName	 Email	                     TotalHours	TotalCount
+    ///55	Justin    McDonalds  Justin.McDonalds@gmail.com  11.65	    97
     /// </summary>
     public partial class AddGetUsersWithPaginationProcedure : Migration
     {
