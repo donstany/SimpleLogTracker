@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
-using SimpleLogTracker.Application.Common.Interfaces;
-using SimpleLogTracker.Application.TodoLists.Queries.GetTodos;
-using SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackeUsersProjects;
-using SimpleLogTracker.Domain.Entities;
+﻿using SimpleLogTracker.Application.Common.Interfaces;
 
 namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUsersProjects
 {
-    public record GetTrackerUsersProjectsQuery : IRequest<List<GetTrackerUsersProjectsDto>>
+    public record GetTrackerUsersProjectsQuery : IRequest<IEnumerable<GetTrackerUsersProjectsDto>>
     {
         public DateTime? StartDateTime { get; init; }
         public DateTime? EndDateTime { get; init; }
@@ -20,7 +16,7 @@ namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUs
 
     }
 
-    public class GetTrackerUsersProjectsQueryHandler : IRequestHandler<GetTrackerUsersProjectsQuery, List<GetTrackerUsersProjectsDto>>
+    public class GetTrackerUsersProjectsQueryHandler : IRequestHandler<GetTrackerUsersProjectsQuery, IEnumerable<GetTrackerUsersProjectsDto>>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -30,26 +26,13 @@ namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUs
             _mapper = mapper;
         }
 
-        public async Task<List<GetTrackerUsersProjectsDto>> Handle(GetTrackerUsersProjectsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<GetTrackerUsersProjectsDto>> Handle(GetTrackerUsersProjectsQuery request, CancellationToken cancellationToken)
         {
             var result = await _context.GetTopUsersAndProjectsAsync(request.StartDateTime, request.EndDateTime, cancellationToken);
 
-            var query = result.AsQueryable()
-                .ProjectTo<GetTrackerUsersProjectsDto>(_mapper.ConfigurationProvider);
-
-            List<GetTrackerUsersProjectsDto> projectDtos;
-            try
-            {
-                
-                projectDtos = query.ToList();
-            }
-            catch (Exception ex)
-            {
-                // Log the exception, handle it, etc.
-                throw new Exception("An error occurred while retrieving the data.", ex);
-            }
-
-            return projectDtos;
+            return result.AsQueryable()
+                         .ProjectTo<GetTrackerUsersProjectsDto>(_mapper.ConfigurationProvider)
+                         .ToList();
         }
     }
 }

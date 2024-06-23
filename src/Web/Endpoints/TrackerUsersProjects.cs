@@ -1,5 +1,4 @@
 ﻿using SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUsersProjects;
-using SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackeUsersProjects;
 
 namespace SimpleLogTracker.Web.Endpoints;
 
@@ -11,9 +10,8 @@ public class TrackerUsersProjects : EndpointGroupBase
             .MapGet(GetTrackerUsersProjects);
     }
 
-    public async Task<List<GetTrackerUsersProjectsDto>> GetTrackerUsersProjects(ISender sender, [AsParameters] GetTrackerUsersProjectsQuery request)
+    public async Task<IEnumerable<GetTrackerUsersProjectsDto>> GetTrackerUsersProjects(ISender sender, [AsParameters] GetTrackerUsersProjectsQuery request)
     {
         return await sender.Send(request);
-
     }
 }

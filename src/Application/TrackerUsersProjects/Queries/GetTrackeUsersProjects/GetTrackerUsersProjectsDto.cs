@@ -1,7 +1,6 @@
-﻿using SimpleLogTracker.Application.TodoLists.Queries.GetTodos;
-using SimpleLogTracker.Domain.Entities;
+﻿using SimpleLogTracker.Domain.Entities;
 
-namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackeUsersProjects;
+namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUsersProjects;
 
 public class GetTrackerUsersProjectsDto
 {
