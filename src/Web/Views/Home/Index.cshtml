@@ -95,6 +95,19 @@
         $(document).ready(function () {
             $('#startDate, #endDate').datepicker();
 
+            function formatDate(date) {
+                if (!date) return null;
+                var d = new Date(date),
+                    month = '' + (d.getMonth() + 1),
+                    day = '' + d.getDate(),
+                    year = d.getFullYear();
+
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+
+                return [year, month, day].join('-');
+            }
+
             $('#dateRangeCheck').change(function () {
                 if (this.checked) {
                     $('#startDate, #endDate').prop('disabled', false);
@@ -113,8 +126,8 @@
                     data: function (d) {
                         var startDate = $('#startDate').datepicker('getDate');
                         var endDate = $('#endDate').datepicker('getDate');
-                        d.startDate = $('#dateRangeCheck').is(':checked') && startDate ? startDate.toISOString() : null;
-                        d.endDate = $('#dateRangeCheck').is(':checked') && endDate ? endDate.toISOString() : null;
+                        d.startDate = $('#dateRangeCheck').is(':checked') && startDate ? formatDate(startDate) : null;
+                        d.endDate = $('#dateRangeCheck').is(':checked') && endDate ? formatDate(endDate) : null;
                         return JSON.stringify(d);
                     },
                     dataSrc: function (json) {
@@ -170,9 +183,17 @@
 
             function drawChart(comparisonData = null) {
                 var chartType = $('input[name="chartType"]:checked').val();
+                var startDate = $('#startDate').datepicker('getDate');
+                var endDate = $('#endDate').datepicker('getDate');
+                var filterParams = {
+                    startDate: $('#dateRangeCheck').is(':checked') && startDate ? formatDate(startDate) : null,
+                    endDate: $('#dateRangeCheck').is(':checked') && endDate ? formatDate(endDate) : null
+                };
+                debugger;
                 $.ajax({
                     url: '/api/trackerUsersProjects',
                     method: 'GET',
+                    data: filterParams,
                     success: function (data) {
                         debugger;
                         console.log(data);
