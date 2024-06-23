@@ -30,6 +30,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.Entity<TLProject>().ToTable("TLProjects");
         builder.Entity<TimeLog>().ToTable("TimeLogs");
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+        builder.Entity<TopResult>().HasNoKey().ToView(null);
     }
 
     public async Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default)

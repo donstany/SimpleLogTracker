@@ -11,9 +11,9 @@ public class TrackerUsersProjects : EndpointGroupBase
             .MapGet(GetTrackerUsersProjects);
     }
 
-    public async Task<List<GetTrackerUsersProjectsDto>> GetTrackerUsersProjects(ISender sender)
+    public async Task<List<GetTrackerUsersProjectsDto>> GetTrackerUsersProjects(ISender sender, [AsParameters] GetTrackerUsersProjectsQuery request)
     {
-        return await sender.Send(new GetTrackerUsersProjectsQuery());
+        return await sender.Send(request);
 
     }
 }

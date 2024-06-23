@@ -77,9 +77,9 @@
             <div class="col-md-6">
                 <h2>Top 10 Users/Projects by Hours</h2>
                 <div>
-                    <input type="radio" id="radioUser" name="chartType" value="user" checked>
+                    <input type="radio" id="radioUser" name="chartType" value="User" checked>
                     <label for="radioUser">User</label>
-                    <input type="radio" id="radioProject" name="chartType" value="project">
+                    <input type="radio" id="radioProject" name="chartType" value="Project">
                     <label for="radioProject">Project</label>
                 </div>
                 <div id="chart_div"></div>
@@ -174,27 +174,29 @@
                     url: '/api/trackerUsersProjects',
                     method: 'GET',
                     success: function (data) {
+                        debugger;
+                        console.log(data);
                         var chartData = new google.visualization.DataTable();
                         chartData.addColumn('string', 'Name');
-                        chartData.addColumn('number', 'TotalHours');
+                        chartData.addColumn('number', 'totalHours');
 
                         var filteredChartData = data
                             .filter(item => item.type === chartType)
-                            .map(item => [item.name, item.hours]);
+                            .map(item => [item.name, parseFloat(item.totalHours)]);
 
                         chartData.addRows(filteredChartData);
 
-                        if (chartType === 'user' && comparisonData) {
+                        if (chartType === 'User' && comparisonData) {
                             chartData.addColumn('number', 'Comparison');
                             for (var i = 0; i < filteredChartData.length; i++) {
                                 chartData.setValue(i, 1, chartData.getValue(i, 1));
-                                chartData.setValue(i, 2, comparisonData[0].totalHours);
+                                chartData.setValue(i, 2, parseFloat(comparisonData[0].totalHours));
                             }
                         }
 
                         var options = {
-                            title: chartType === 'user' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
-                            hAxis: { title: chartType === 'user' ? 'User' : 'Project' },
+                            title: chartType === 'User' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
+                            hAxis: { title: chartType === 'User' ? 'User' : 'Project' },
                             vAxis: { title: 'Total Hours' },
                             seriesType: 'bars',
                             series: {
