@@ -2,7 +2,7 @@
 
 namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
 {
-    public record GetUsersForDataTables : IRequest<PaginatedList<UsersForDataTablesDto>>
+    public record GetUsersForDataTablesQuery : IRequest<PaginatedList<UsersForDataTablesDto>>
     {
         public int Draw { get; init; }
         public int Start { get; init; }
@@ -26,7 +26,7 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? Dir { get; set; }
     }
 
-    public class GetUsersForDataTablesHandler : IRequestHandler<GetUsersForDataTables, PaginatedList<UsersForDataTablesDto>>
+    public class GetUsersForDataTablesHandler : IRequestHandler<GetUsersForDataTablesQuery, PaginatedList<UsersForDataTablesDto>>
     {
         private readonly IMapper _mapper;
         private readonly IApplicationDbContext _context;
@@ -37,7 +37,7 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
             _context = context;
         }
 
-        public async Task<PaginatedList<UsersForDataTablesDto>> Handle(GetUsersForDataTables request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<UsersForDataTablesDto>> Handle(GetUsersForDataTablesQuery request, CancellationToken cancellationToken)
         {
             var orderByColumn = request.Columns?[request.Order?.FirstOrDefault()?.Column ?? 0]?.Data ?? "Id";
             var orderByDirection = request.Order?.FirstOrDefault()?.Dir ?? "ASC";

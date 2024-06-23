@@ -11,7 +11,7 @@ public class TrackerUsers : EndpointGroupBase
             .MapPost(GetUsersWithPagination);
     }
 
-    public async Task<IResult> GetUsersWithPagination(ISender sender, [FromBody] GetUsersForDataTables query)
+    public async Task<IResult> GetUsersWithPagination(ISender sender, [FromBody] GetUsersForDataTablesQuery query)
     {
         var result = await sender.Send(query);
         return Results.Ok(new

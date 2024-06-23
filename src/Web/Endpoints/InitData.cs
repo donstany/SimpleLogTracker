@@ -10,8 +10,8 @@ public class InitData : EndpointGroupBase
             .MapPost(SeedInitData);
     }
 
-    public Task<int> SeedInitData(ISender sender, CreateInitDataCommand command)
+    public Task<int> SeedInitData(ISender sender)
     {
-        return sender.Send(command);
+        return sender.Send(new CreateInitDataCommand());
     }
 }
