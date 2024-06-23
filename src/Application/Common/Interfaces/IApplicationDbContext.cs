@@ -16,7 +16,7 @@ public interface IApplicationDbContext
     Task<int> InitializeDatabaseAsync(CancellationToken cancellationToken = default);
     Task<IEnumerable<TopResult>> GetTopResultAsync(DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken);
     //TODO fix signature
-    Task<PaginatedList<UsersForDataTablesDto>> GetUserWithPaginationAsync(DateTime? startDate,
+    Task<(List<UserWithPagination> Users, int TotalCount)> GetUserWithPaginationAsync(DateTime? startDate,
                                                                           DateTime? endDate,
                                                                           int start,
                                                                           int length,

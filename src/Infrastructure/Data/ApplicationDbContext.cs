@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination;
 
 namespace SimpleLogTracker.Infrastructure.Data;
 
@@ -87,14 +86,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         return result;
     }
 
-    public async Task<PaginatedList<UsersForDataTablesDto>> GetUserWithPaginationAsync(
-                                                                                        DateTime? startDate,
-                                                                                        DateTime? endDate,
-                                                                                        int start,
-                                                                                        int length,
-                                                                                        string orderByColumn,
-                                                                                        string orderByDirection,
-                                                                                        CancellationToken cancellationToken)
+    public async Task<(List<UserWithPagination> Users, int TotalCount)> GetUserWithPaginationAsync(
+        DateTime? startDate, DateTime? endDate, int start, int length,
+        string orderByColumn, string orderByDirection, CancellationToken cancellationToken)
     {
         var startDateParam = startDate.HasValue
             ? new SqlParameter("@startDate", startDate.Value)
@@ -116,19 +110,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
         var totalCount = userWithPaginationResult.FirstOrDefault()?.TotalCount ?? 0;
 
-        var paginatedResult = userWithPaginationResult
-            .Select(u => new UsersForDataTablesDto
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                TotalHours = u.TotalHours
-            })
-            .ToList();
-        //TODO move mapping in Handler
-        return new PaginatedList<UsersForDataTablesDto>(paginatedResult, totalCount, start / length + 1, length);
+        return (userWithPaginationResult, totalCount);
     }
+
 
     public async Task<UserHours> GetUserComparisonAsync(int userId, DateTime? startDate, DateTime? endDate, CancellationToken cancellationToken)
     {

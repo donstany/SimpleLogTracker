@@ -13,13 +13,13 @@ public class TrackerUsers : EndpointGroupBase
 
     public async Task<IResult> GetUsersWithPagination(ISender sender, [FromBody] GetUsersForDataTablesQuery query)
     {
-        var result = await sender.Send(query);
+        var (users, totalCount) = await sender.Send(query);
         return Results.Ok(new
         {
             draw = query.Draw,
-            recordsTotal = result.TotalCount,
-            recordsFiltered = result.TotalCount,
-            data = result.Items
+            recordsTotal = totalCount,
+            recordsFiltered = totalCount,
+            data = users
         });
     }
 }

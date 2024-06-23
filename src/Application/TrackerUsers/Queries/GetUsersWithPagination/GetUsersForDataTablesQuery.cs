@@ -1,8 +1,16 @@
-﻿using SimpleLogTracker.Application.Common.Interfaces;
+﻿using AutoMapper;
+using MediatR;
+using SimpleLogTracker.Application.Common.Interfaces;
+using SimpleLogTracker.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
 {
-    public record GetUsersForDataTablesQuery : IRequest<PaginatedList<UsersForDataTablesDto>>
+    public record GetUsersForDataTablesQuery : IRequest<(List<UsersForDataTablesDto> Users, int TotalCount)>
     {
         public int Draw { get; init; }
         public int Start { get; init; }
@@ -26,7 +34,7 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? Dir { get; set; }
     }
 
-    public class GetUsersForDataTablesHandler : IRequestHandler<GetUsersForDataTablesQuery, PaginatedList<UsersForDataTablesDto>>
+    public class GetUsersForDataTablesHandler : IRequestHandler<GetUsersForDataTablesQuery, (List<UsersForDataTablesDto> Users, int TotalCount)>
     {
         private readonly IMapper _mapper;
         private readonly IApplicationDbContext _context;
@@ -37,12 +45,12 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
             _context = context;
         }
 
-        public async Task<PaginatedList<UsersForDataTablesDto>> Handle(GetUsersForDataTablesQuery request, CancellationToken cancellationToken)
+        public async Task<(List<UsersForDataTablesDto> Users, int TotalCount)> Handle(GetUsersForDataTablesQuery request, CancellationToken cancellationToken)
         {
             var orderByColumn = request.Columns?[request.Order?.FirstOrDefault()?.Column ?? 0]?.Data ?? "Id";
             var orderByDirection = request.Order?.FirstOrDefault()?.Dir ?? "ASC";
 
-            var result = await _context.GetUserWithPaginationAsync(
+            var (users, totalCount) = await _context.GetUserWithPaginationAsync(
                 request.StartDate,
                 request.EndDate,
                 request.Start,
@@ -52,7 +60,9 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
                 cancellationToken
             );
 
-            return result;
+            var userDtos = _mapper.Map<List<UsersForDataTablesDto>>(users);
+
+            return (userDtos, totalCount);
         }
     }
 
@@ -72,12 +82,13 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public string? LastName { get; set; }
         public string? Email { get; set; }
         public decimal TotalHours { get; set; }
-        //public DateTime CreatedDate { get; set; }
+
         private class Mapping : Profile
         {
             public Mapping()
             {
                 CreateMap<User, UsersForDataTablesDto>();
+                CreateMap<UserWithPagination, UsersForDataTablesDto>();
             }
         }
     }
