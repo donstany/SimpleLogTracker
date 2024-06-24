@@ -21,7 +21,7 @@ public class GetUserComparisonDataQueryHandler : IRequestHandler<GetUserComparis
 
     public async Task<GetUserComparisonDto> Handle(GetUserComparisonQuery request, CancellationToken cancellationToken)
     {
-        var result = await _context.GetUserComparisonAsync(request.UserId, request.StartDate, request.EndDate, cancellationToken);
-        return _mapper.Map<GetUserComparisonDto>(result);
+        var getUserComparisonAsyncResult = await _context.GetUserComparisonAsync(request.UserId, request.StartDate, request.EndDate, cancellationToken);
+        return _mapper.Map<GetUserComparisonDto>(getUserComparisonAsyncResult);
     }
 }

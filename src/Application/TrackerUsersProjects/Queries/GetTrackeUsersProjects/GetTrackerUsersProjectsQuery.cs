@@ -13,7 +13,6 @@ namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUs
             StartDateTime = !string.IsNullOrEmpty(startDate) ? DateTime.Parse(startDate, null, System.Globalization.DateTimeStyles.RoundtripKind).Date : null;
             EndDateTime = !string.IsNullOrEmpty(endDate) ? DateTime.Parse(endDate, null, System.Globalization.DateTimeStyles.RoundtripKind).Date : null;
         }
-
     }
 
     public class GetTrackerUsersProjectsQueryHandler : IRequestHandler<GetTrackerUsersProjectsQuery, IEnumerable<GetTrackerUsersProjectsDto>>
