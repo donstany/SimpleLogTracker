@@ -1,6 +1,6 @@
-﻿namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
+﻿namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination.Dtos
 {
-    public class User
+    public class UserDto
     {
         public int Id { get; set; }
         public string? FirstName { get; set; }

@@ -1,13 +1,13 @@
-﻿namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
+﻿namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination.Dtos
 {
-    public class PaginatedList<T>
+    public class PaginatedListDto<T>
     {
         public List<T> Items { get; }
         public int TotalCount { get; }
         public int PageIndex { get; }
         public int PageSize { get; }
 
-        public PaginatedList(List<T> items, int count, int pageIndex, int pageSize)
+        public PaginatedListDto(List<T> items, int count, int pageIndex, int pageSize)
         {
             Items = items;
             TotalCount = count;

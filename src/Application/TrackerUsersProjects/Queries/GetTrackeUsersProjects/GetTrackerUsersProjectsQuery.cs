@@ -28,11 +28,11 @@ namespace SimpleLogTracker.Application.TrackerUsersProjects.Queries.GetTrackerUs
 
         public async Task<IEnumerable<GetTrackerUsersProjectsDto>> Handle(GetTrackerUsersProjectsQuery request, CancellationToken cancellationToken)
         {
-            var result = await _context.GetTopResultAsync(request.StartDateTime, request.EndDateTime, cancellationToken);
+            var getTopResultAsyncResult = await _context.GetTopResultAsync(request.StartDateTime, request.EndDateTime, cancellationToken);
 
-            return result.AsQueryable()
-                         .ProjectTo<GetTrackerUsersProjectsDto>(_mapper.ConfigurationProvider)
-                         .ToList();
+            return getTopResultAsyncResult.AsQueryable()
+                                          .ProjectTo<GetTrackerUsersProjectsDto>(_mapper.ConfigurationProvider)
+                                          .ToList();
         }
     }
 }

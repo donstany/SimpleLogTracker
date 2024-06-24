@@ -18,8 +18,6 @@ public class CreateInitCommandHandler : IRequestHandler<CreateInitDataCommand, i
 
     public async Task<int> Handle(CreateInitDataCommand request, CancellationToken cancellationToken)
     {
-        var returnValue = await _context.InitializeDatabaseAsync(cancellationToken);
-
-        return returnValue;
+        return await _context.InitializeDatabaseAsync(cancellationToken);
     }
 }

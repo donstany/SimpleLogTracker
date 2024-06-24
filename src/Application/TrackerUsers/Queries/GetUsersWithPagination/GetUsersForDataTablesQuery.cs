@@ -1,4 +1,5 @@
 ﻿using SimpleLogTracker.Application.Common.Interfaces;
+using SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination.Dtos;
 
 namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
 {
@@ -7,8 +8,8 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         public int Draw { get; init; }
         public int Start { get; init; }
         public int Length { get; init; }
-        public List<Column>? Columns { get; init; }
-        public List<Order>? Order { get; init; }
+        public List<ColumnDto>? Columns { get; init; }
+        public List<OrderDto>? Order { get; init; }
         public DateTime? StartDate { get; init; }
         public DateTime? EndDate { get; init; }
     }

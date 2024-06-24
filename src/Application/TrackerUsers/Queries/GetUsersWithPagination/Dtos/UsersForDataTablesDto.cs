@@ -1,6 +1,6 @@
 ﻿using SimpleLogTracker.Domain.Entities;
 
-namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination
+namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPagination.Dtos
 {
     public class UsersForDataTablesDto
     {
@@ -13,7 +13,7 @@ namespace SimpleLogTracker.Application.TrackerUsers.Queries.GetUsersWithPaginati
         {
             public Mapping()
             {
-                CreateMap<User, UsersForDataTablesDto>();
+                CreateMap<UserDto, UsersForDataTablesDto>();
                 CreateMap<UserWithPagination, UsersForDataTablesDto>();
             }
         }
