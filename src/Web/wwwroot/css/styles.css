@@ -1,0 +1,7 @@
+﻿.box {
+    margin-top: 20px;
+}
+
+.selected-row {
+    background-color: #d9edf7 !important;
+}
