@@ -20,7 +20,7 @@
   }
 
   function initUsersTable() {
-    var usersTable = $('#usersTable').DataTable({
+    let usersTable = $('#usersTable').DataTable({
       processing: true,
       serverSide: true,
       ajax: {
@@ -28,8 +28,8 @@
         type: 'POST',
         contentType: 'application/json',
         data: function (d) {
-          var startDate = $('#startDate').datepicker('getDate');
-          var endDate = $('#endDate').datepicker('getDate');
+          let startDate = $('#startDate').datepicker('getDate');
+          let endDate = $('#endDate').datepicker('getDate');
           d.startDate = $('#dateRangeCheck').is(':checked') && startDate ? formatDate(startDate) : null;
           d.endDate = $('#dateRangeCheck').is(':checked') && endDate ? formatDate(endDate) : null;
           return JSON.stringify(d);
@@ -57,12 +57,12 @@
     });
 
     $(document).on('click', '.compare-btn', function () {
-      var userId = $(this).data('user-id');
-      var startDate = $('#startDate').datepicker('getDate');
-      var endDate = $('#endDate').datepicker('getDate');
-      var formattedStartDate = startDate ? formatDate(startDate) : null;
-      var formattedEndDate = endDate ? formatDate(endDate) : null;
-      var url = `/api/TrackerUsersComparison/${userId}?startDate=${encodeURIComponent(formattedStartDate)}&endDate=${encodeURIComponent(formattedEndDate)}`;
+      let userId = $(this).data('user-id');
+      let startDate = $('#startDate').datepicker('getDate');
+      let endDate = $('#endDate').datepicker('getDate');
+      let formattedStartDate = startDate ? formatDate(startDate) : null;
+      let formattedEndDate = endDate ? formatDate(endDate) : null;
+      let url = `/api/TrackerUsersComparison/${userId}?startDate=${encodeURIComponent(formattedStartDate)}&endDate=${encodeURIComponent(formattedEndDate)}`;
 
       $.ajax({
         url: url,
@@ -110,10 +110,10 @@
   }
 
   function drawChart(comparisonData = null) {
-    var chartType = $('input[name="chartType"]:checked').val();
-    var startDate = $('#startDate').datepicker('getDate');
-    var endDate = $('#endDate').datepicker('getDate');
-    var filterParams = {
+    let chartType = $('input[name="chartType"]:checked').val();
+    let startDate = $('#startDate').datepicker('getDate');
+    let endDate = $('#endDate').datepicker('getDate');
+    let filterParams = {
       startDate: $('#dateRangeCheck').is(':checked') && startDate ? formatDate(startDate) : null,
       endDate: $('#dateRangeCheck').is(':checked') && endDate ? formatDate(endDate) : null
     };
@@ -123,11 +123,11 @@
       method: 'GET',
       data: filterParams,
       success: function (data) {
-        var chartData = new google.visualization.DataTable();
+        let chartData = new google.visualization.DataTable();
         chartData.addColumn('string', 'Name');
         chartData.addColumn('number', 'totalHours');
 
-        var filteredChartData = data
+        let filteredChartData = data
           .filter(item => item.type === chartType)
           .map(item => [item.name, parseFloat(item.totalHours)]);
 
@@ -141,7 +141,7 @@
           });
         }
 
-        var options = {
+        let options = {
           title: chartType === 'User' ? 'Top 10 Users by Hours' : 'Top 10 Projects by Hours',
           hAxis: {
             title: chartType === 'User' ? 'User' : 'Project',
@@ -157,7 +157,7 @@
           legend: { position: 'top' }
         };
 
-        var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+        let chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
         chart.draw(chartData, options);
       },
       error: function (xhr) {
@@ -168,7 +168,7 @@
 
   function formatDate(date) {
     if (!date) return null;
-    var d = new Date(date),
+    let d = new Date(date),
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
       year = d.getFullYear();
