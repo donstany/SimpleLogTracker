@@ -1,12 +1,19 @@
 ﻿using SimpleLogTracker.Application.Common.Interfaces;
 
-
 namespace SimpleLogTracker.Application.TrackerUsersComparison.Queries;
+
 public record GetUserComparisonQuery : IRequest<GetUserComparisonDto>
 {
-    public int UserId { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+    public int UserId { get; set; }
+
+    public GetUserComparisonQuery(DateTime? startDate, DateTime? endDate, int userId)
+    {
+        StartDate = startDate;
+        EndDate = endDate;
+        UserId = userId;
+    }
 }
 
 public class GetUserComparisonDataQueryHandler : IRequestHandler<GetUserComparisonQuery, GetUserComparisonDto>

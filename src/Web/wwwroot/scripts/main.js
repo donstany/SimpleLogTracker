@@ -60,13 +60,15 @@
       let userId = $(this).data('user-id');
       let startDate = $('#startDate').datepicker('getDate');
       let endDate = $('#endDate').datepicker('getDate');
-      let formattedStartDate = startDate ? formatDate(startDate) : null;
-      let formattedEndDate = endDate ? formatDate(endDate) : null;
-      let url = `/api/TrackerUsersComparison/${userId}?startDate=${encodeURIComponent(formattedStartDate)}&endDate=${encodeURIComponent(formattedEndDate)}`;
-
+      let filterParams = {
+        userId: userId,
+        startDate: $('#dateRangeCheck').is(':checked') && startDate ? formatDate(startDate) : null,
+        endDate: $('#dateRangeCheck').is(':checked') && endDate ? formatDate(endDate) : null
+      };
       $.ajax({
-        url: url,
+        url: '/api/trackerUsersComparison',
         method: 'GET',
+        data: filterParams,
         success: function (data) {
           drawChart([data]);
           $('#usersTable tbody tr').removeClass('selected-row');
